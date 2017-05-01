@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
     }
 
     private void handlePhoneCallPermission() {
-        // Here, thisActivity is the current activity
+        // this method will request permission to handle phone call events
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_PHONE_STATE)
                 != PackageManager.PERMISSION_GRANTED) {

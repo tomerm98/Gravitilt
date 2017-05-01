@@ -18,6 +18,7 @@ public class GameModeActivity extends Activity {
     }
     public void onClickBtnSpeedRun(View view) {
         Intent toGameplayIntent = new Intent(this,GameplayActivity.class);
+        //starts the gameplay activity with the speed run extra value
         toGameplayIntent.putExtra(Game.GAME_MODE_EXTRA_NAME,Game.GAME_MODE_SPEED_RUN);
         startActivity(toGameplayIntent);
     }

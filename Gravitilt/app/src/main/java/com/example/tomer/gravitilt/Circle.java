@@ -6,9 +6,6 @@ package com.example.tomer.gravitilt;
 
 public class Circle extends Entity {
     private float radius;
-
-
-
     public Circle(float radius) {
         super();
         this.radius = radius;

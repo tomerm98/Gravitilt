@@ -12,6 +12,25 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 public class GameplayActivity extends Activity {
+    /*
+    *  ----- WORKFLOW: -----
+    * in onCreate we initiate variables and sensors and create a new screenView.
+    * in onFocusChanged the screenView is fully loaded and we call the launchCurrentGameMode method.
+    * this method will call the proper method for the current game mode: startLevelPractice() or startSpeedRun().
+    * these methods will load the desired level using loadLevel method and then call startCurrentLevel method.
+    * after every call for the screenView's onDraw method (meaning that a frame passed), he will call the
+    * onFrameTick method of this activity. The method will check if the user finished the level or
+    * was swallowed by an obstacle using the isMainCircleReachedEnd and isMainCircleSwallowed methods,
+    * and will then restart the level or finish the level using the finishLevel and restartCurrentLevel methods.
+    * The finishLevel method will check the current game mode and will call the finishPracticeLevel method or the
+    * finishSpeedRunLevel methods accordingly. These methods will either start the next level using
+    * the startNextLevel method or exit the activity.
+    *
+    * */
+
+
+
+
     public static ScreenView screenView;
     private static Context context;
     private static Level currentLevel;
@@ -21,11 +40,10 @@ public class GameplayActivity extends Activity {
     private static final int LAST_LEVEL_ID = 5;
     private static final int CHALLENGE_LEVEL_ID = 6;
     private static long speedRunStartTime;
-    private static Activity thisActivity;
+    private static Activity thisActivity;//for methods that need context
     private static String currentGameMode;
     private static Intent receivedIntent;
     private static LevelsArchive levelsArchive;
-    private static BroadcastReceiver br;
 
 
     @Override
@@ -33,20 +51,16 @@ public class GameplayActivity extends Activity {
         super.onCreate(savedInstanceState);
         thisActivity = this;
         context = this;
-        screenView = new ScreenView(this);
-        setContentView(screenView);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        initializeSensor();
         receivedIntent = getIntent();
         currentGameMode = receivedIntent.getExtras().getString(Game.GAME_MODE_EXTRA_NAME);
+        screenView = new ScreenView(this);
+        setContentView(screenView);
+        //prevents screen from sleeping
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        initializeSensor();
+
         //the game will actually launch on Window Focus Changed (when the screenView is ready)
-
-
-
-
     }
-
-
 
     private void launchCurrentGameMode() {
         switch (currentGameMode) {
@@ -74,6 +88,7 @@ public class GameplayActivity extends Activity {
     }
 
     public static void onFrameTick() {
+        //this method is called after the screenView draw
         if (isMainCircleReachedEnd())
             finishLevel();
         else if (isMainCircleSwallowed())
@@ -125,6 +140,7 @@ public class GameplayActivity extends Activity {
 
 
     private static void restartCurrentLevel() {
+        //resets the main circle
         currentLevel.getMainCircle().setLocationX(currentLevel.getSpawnX());
         currentLevel.getMainCircle().setLocationY(currentLevel.getSpawnY());
         currentLevel.getMainCircle().setVelocityX(0);
@@ -205,7 +221,6 @@ public class GameplayActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         screenView.stop();
         Game.clear();
     }

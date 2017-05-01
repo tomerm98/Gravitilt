@@ -7,7 +7,12 @@ import android.util.DisplayMetrics;
 import java.util.ArrayList;
 
 /**
- * Created by Tomer on 23/04/2017.
+ * This is the global class for the game, Everything is static.
+ * The class contains constants, useful methods and most importantly the state of the game,
+ * which is a list of all the entities that are currently in the game. This class also has all
+ * the necessary physics methods for calculating the properties of the entities after a frame passed.
+ *
+ *
  */
 
 public class Game {
@@ -31,10 +36,10 @@ public class Game {
     }
 
     public static final float G = 1000; //the gravitational constant for newton's formula
-    public static final float TERMINAL_VELOCITY = 1000;
+    public static final float TERMINAL_VELOCITY = 1000; //maximum achievable velocity
     public static final float UNIVERSAL_FRICTION_MULTIPLIER = 0.7F; // speed decay per second
     public static  float timeFactor = 1; // for slow/fast motion
-    public static  Amount GeneralGravityFactor = Amount.Medium; //basically the tilt sensitivity
+    public static  Amount generalGravityFactor = Amount.Medium; //basically the tilt sensitivity
     public static GeoVector generalGravityField = new GeoVector(); //caused by device rotation
     public static final String GAME_MODE_LEVEL_PRACTICE = "level_practice";
     public static final String GAME_MODE_SPEED_RUN = "speed_run";
@@ -44,12 +49,12 @@ public class Game {
 
 
     public static void calcEntitiesAttributes(float elapsedSeconds) {
+        //calculates the new properties of the entities after a frame passed
         elapsedSeconds *= timeFactor;
         for (Entity entity : entities) {
             if (entity.isAffectedByExternalForcesAndFriction()) {
                 calcNetForce(entity);
             }
-
             calcAcceleration(entity);
             calcVelocityAndLocation(entity, elapsedSeconds);
         }
@@ -57,32 +62,42 @@ public class Game {
 
     private static void calcNetForce(Entity entity)
     {
-
+        /*this methods calculates the total force that is applied to this entity
+        from all other entities.*/
         GeoVector newNetForce = new GeoVector();
+
+        //calculate the force applied from the general gravity field
         newNetForce.setAngle(generalGravityField.getAngle());
+        //formula: force = field * mass
         newNetForce.setLength(generalGravityField.getLength() * entity.getMass());
 
-        float m1 = entity.getMass(), m2; //physics notation
-        float r;
+        //calculating the gravity force from all other entities:
+        float m1 = entity.getMass();
+        float m2; //other entity mass
+        float r; //distance between the two entities
         PointF p1 = new PointF(entity.getLocationX(),entity.getLocationY());;
-        PointF p2;
+        PointF p2; // other entity location
+        //the force applied from the other entity
         GeoVector tempForce = new GeoVector();
+
         for (Entity other : entities)
         {
-
             p2 = new PointF(other.getLocationX(),other.getLocationY());
             r = GeoVector.getDistanceFromTwoPoints(p1,p2);
             if (r == 0)
                 continue;
             m2 = other.getMass();
             tempForce.setAngle(GeoVector.getAngleFromTwoPoints(p1,p2));
-            tempForce.setLength(G*m1*m2 / r); // newton's gravitational formula
+            //newton's gravitational formula:
+            tempForce.setLength(G*m1*m2 / r);
+            //add the new force to the total force vector
             newNetForce = GeoVector.add(newNetForce,tempForce);
         }
         entity.setNetForce(newNetForce);
     }
     private static void calcAcceleration(Entity entity)
     {
+        //formula: F = m * a
         float forceX = entity.getNetForce().getXcomponent();
         float forceY = entity.getNetForce().getYcomponent();
         entity.setAccelerationX(forceX / entity.getMass());
@@ -102,6 +117,7 @@ public class Game {
         a = entity.getAccelerationY();
         entity.setLocationY(x0 + v0 * dt + (a * dt * dt) / 2F);
         entity.setVelocityY(v0 + a * dt);
+
         if (entity.isAffectedByExternalForcesAndFriction())
             reduceVelocityDueToFriction(entity, elapsedSeconds);
         fixTerminalVelocityDeviation(entity);
@@ -131,6 +147,7 @@ public class Game {
 
     public static void fixOffBorderEntities(float borderWidth, float borderHeight)
     {
+        //prevents the entity from going off the screen
         for (Entity entity : entities) {
             if (entity instanceof Circle)
                 fixOffBorderCircle((Circle) entity, borderWidth, borderHeight);
@@ -175,9 +192,9 @@ public class Game {
 
     public static void calcGeneralGravity(float rotationX, float rotationY)
     {
-
-        float gravityX = rotationX * GeneralGravityFactor.getValue();
-        float gravityY = rotationY * GeneralGravityFactor.getValue();
+        //this method should be called whenever the device rotates
+        float gravityX = rotationX * generalGravityFactor.getValue();
+        float gravityY = rotationY * generalGravityFactor.getValue();
         generalGravityField = GeoVector.generateFromComponents(gravityX,gravityY);
 
 
@@ -185,6 +202,7 @@ public class Game {
 
     public static boolean isEntitySwallowed(Entity entity, Entity other)
     {
+        //returns true if the first entity is inside the other entity
         if (entity instanceof Circle && other instanceof Circle)
             return isCircleSwallowedByCircle((Circle)entity, (Circle)other);
         if (entity instanceof Circle && other instanceof Rectangle)
@@ -268,10 +286,12 @@ public class Game {
 
 
     public static float pxToDp(float px, Context context) {
+        //converts a pixel value to dp value according to the device DPI
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return  Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
     public static float dpToPx(float dp,Context context) {
+        //converts a dp value to pixel value according to the device DPI
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }

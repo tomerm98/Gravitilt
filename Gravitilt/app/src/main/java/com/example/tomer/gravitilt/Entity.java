@@ -16,8 +16,12 @@ public class Entity{
     private float accelerationX;
     private float accelerationY;
     private float mass;
+    /*if the below boolean is false, the entity will not be accelerated from gravity forces
+    and will not lose it's velocity from friction. however, it will still inflict a gravity force
+    on other entities.
+    */
     private boolean affectedByExternalForcesAndFriction;
-    private GeoVector netForce;
+    private GeoVector netForce;//the total force applied to this entity
     private Paint paint;
 
 

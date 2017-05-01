@@ -23,14 +23,17 @@ public class SettingsActivity extends Activity {
 
         SeekBar skTime = (SeekBar) findViewById(R.id.skTime);
         final TextView tvTimeValue = (TextView) findViewById(R.id.tvTimeValue);
+        //initiate the seekbar value
         int timeValue = (int)(Game.timeFactor * 100);
         skTime.setProgress(timeValue);
         String timeValueText = String.valueOf(timeValue) + "%";
         tvTimeValue.setText(timeValueText);
 
+
         skTime.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                //change the timeFactor according to the new seekbar value
                 String timeValueText = String.valueOf(seekBar.getProgress()) + "%";
                 tvTimeValue.setText(timeValueText);
                 Game.timeFactor = ((float)seekBar.getProgress()) / 100;
@@ -38,12 +41,12 @@ public class SettingsActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                //do nothing
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                //do nothing
             }
         });
 
@@ -51,6 +54,7 @@ public class SettingsActivity extends Activity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        //register the xml menu file
         super.onCreateContextMenu(menu, v, menuInfo);
         if (v.getId() == R.id.btnSensitivity)
         {
@@ -62,17 +66,17 @@ public class SettingsActivity extends Activity {
     public boolean onContextItemSelected(MenuItem item) {
         Button btnSensitivity = (Button) findViewById(R.id.btnSensitivity);
         btnSensitivity.setText(item.getTitle());
-
+        //set the gravity factor according to the selected item
         switch (item.getItemId())
         {
             case R.id.miLow:
-                Game.GeneralGravityFactor = Game.Amount.Low;
+                Game.generalGravityFactor = Game.Amount.Low;
                 break;
             case R.id.miMedium:
-                Game.GeneralGravityFactor = Game.Amount.Medium;
+                Game.generalGravityFactor = Game.Amount.Medium;
                 break;
             case R.id.miHigh:
-                Game.GeneralGravityFactor = Game.Amount.High;
+                Game.generalGravityFactor = Game.Amount.High;
                 break;
         }
 
@@ -80,7 +84,7 @@ public class SettingsActivity extends Activity {
     }
 
     private String getGameTiltSensitivity() {
-        switch (Game.GeneralGravityFactor){
+        switch (Game.generalGravityFactor){
             case Low:
                 return"Low";
             case Medium:
@@ -93,6 +97,7 @@ public class SettingsActivity extends Activity {
     }
 
     public void onClickBtnClear(View view) {
+        //creates a warning dialog and clear the leaderboards if users clicks 'yes'
         new AlertDialog.Builder(this)
                 .setTitle("Warning")
                 .setMessage("Are you sure you want to permanently clear the leaderboards?")

@@ -14,6 +14,12 @@ import static java.lang.Math.sqrt;
  */
 
 public class GeoVector{
+    /*
+    * This class represents a two-dimensional geometric vector and is suited to be used
+    * in the context of physics calculations. The vector is represented by a it's length and it's
+    * angle below the right side of the horizon. The angle is in Radians and should always be positive.
+    * For example, a vector pointing up will have an angle value of 1.5 PI
+    * */
     private float length;
     private float angle; //BELOW right horizon, RAD
 

@@ -23,6 +23,7 @@ public class FinishedRunActivity extends Activity {
         final LocalDataStorage lds = new LocalDataStorage(this);
 
         Intent receivedIntent = getIntent();
+        //gets the time value from the intent and displays it
         final float time = receivedIntent.getExtras().getFloat(Game.SPEED_RUN_SCORE_EXTRA_NAME);
         tvTime.setText(String.valueOf(time));
 
@@ -46,6 +47,7 @@ public class FinishedRunActivity extends Activity {
             }
         });
 
+        //saves a new score and returns to mainActivity
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,6 +60,7 @@ public class FinishedRunActivity extends Activity {
         });
     }
 
+    //returns to mainActivity instead of gameplayActivity when the users clicks the back button
     @Override
     public void onBackPressed() {
         super.onBackPressed();

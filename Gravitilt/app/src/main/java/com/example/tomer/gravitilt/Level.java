@@ -7,11 +7,13 @@ import java.util.ArrayList;
  */
 
 public class Level{
+
     private int id;
-    private Circle mainCircle;
-    private ArrayList<Circle> holes;
-    private ArrayList<Rectangle> blocks;
-    private Rectangle endRectangle;
+    private Circle mainCircle; //controlled by the user
+    private ArrayList<Circle> holes; //obstacles
+    private ArrayList<Rectangle> blocks; //obstacles
+    private Rectangle endRectangle; //the goal is to get the mainCircle to this Rectangle
+    //the spawn values are the initial location of the mainCircle
     private float spawnX;
     private float spawnY;
 
